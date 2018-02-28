@@ -10,6 +10,8 @@ namespace Palindrom_of_primes
     {
         static void Main(string[] args)
         {
+			DateTime StartTime = DateTime.Now;
+			
 			//Looking for primes 
 			//Sieve of Eratosthenes
 			const int max5Digit = 99999;
@@ -30,23 +32,29 @@ namespace Palindrom_of_primes
 			//Looking for max polindrom
 			int x = 0;                                                                          //1st multiplier
 			int y = 0;                                                                          //2nd multiplier
-			long pal = 0;									                                   //result
+			long pal = 0;																		//result
 
-			for(int i = 0; i < primes.Length - 1; ++i)
-				for(int j = i+1; j < primes.Length; ++j)
+			Object lockObj = new Object();
+			Parallel.For(0, primes.Length - 1, index => {
+				for (int j = index + 1; j < primes.Length; ++j)
 				{
-					long mult = (long)primes[i] * (long)primes[j];
+					long mult = (long)primes[index] * (long)primes[j];
 					if (isPalindorme(mult) && mult > pal)
 					{
-						pal = mult;
-						x = primes[i];
-						y = primes[j];
+						lock (lockObj)
+						{
+							pal = mult;
+							x = primes[index];
+							y = primes[j];
+						}
 					}
 
 				}
-					
-			
+			});
+				
+
 			Console.WriteLine($"{x} * {y} = {pal}");
+			Console.WriteLine("Duration: {0}", DateTime.Now - StartTime);
 			Console.ReadLine();
 		}
 
