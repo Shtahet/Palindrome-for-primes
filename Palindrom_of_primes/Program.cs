@@ -34,25 +34,27 @@ namespace Palindrom_of_primes
 			int y = 0;                                                                          //2nd multiplier
 			long pal = 0;																		//result
 
-			Object lockObj = new Object();
-			Parallel.For(0, primes.Length - 1, index => {
-				for (int j = index + 1; j < primes.Length; ++j)
+			Object lockObj = new Object();                                                      //Lock object for multithreaded computing
+			Parallel.For(0, primes.Length - 1, index => {                                       //Multithreading cycle for
+				for (int j = index + 1; j < primes.Length; ++j)									//Subcycle
 				{
 					long mult = (long)primes[index] * (long)primes[j];
-					if (isPalindorme(mult) && mult > pal)
+					if (isPalindorme(mult) == true)
 					{
-						lock (lockObj)
+						lock (lockObj)															//Lock result calculation
 						{
-							pal = mult;
-							x = primes[index];
-							y = primes[j];
+							if (mult > pal) {
+								pal = mult;
+								x = primes[index];
+								y = primes[j];
+							}
 						}
 					}
 
 				}
 			});
-				
 
+			//Display result
 			Console.WriteLine($"{x} * {y} = {pal}");
 			Console.WriteLine("Duration: {0}", DateTime.Now - StartTime);
 			Console.ReadLine();
